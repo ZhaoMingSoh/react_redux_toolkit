@@ -10,8 +10,8 @@ const EditPostForm = () => {
     const { postId } = useParams()
     const navigate = useNavigate()
 
-    const [updatePost, { isLoading }] = useUpdatePostMutation()
-    const [deletePost] = useDeletePostMutation()
+    const [updatePost, { isLoading }] = useUpdatePostMutation() // **
+    const [deletePost] = useDeletePostMutation() // **
 
     const post = useSelector((state) => selectPostById(state, Number(postId)))
     const users = useSelector(selectAllUsers)
@@ -32,12 +32,12 @@ const EditPostForm = () => {
     const onContentChanged = e => setContent(e.target.value)
     const onAuthorChanged = e => setUserId(Number(e.target.value))
 
-    const canSave = [title, content, userId].every(Boolean) && !isLoading;
+    const canSave = [title, content, userId].every(Boolean) && !isLoading; // **
 
     const onSavePostClicked = async () => {
         if (canSave) {
             try {
-                await updatePost({ id: post.id, title, body: content, userId }).unwrap()
+                await updatePost({ id: post.id, title, body: content, userId }).unwrap() // **
 
                 setTitle('')
                 setContent('')
@@ -58,7 +58,7 @@ const EditPostForm = () => {
 
     const onDeletePostClicked = async () => {
         try {
-            await deletePost({ id: post.id }).unwrap()
+            await deletePost({ id: post.id }).unwrap() // **
 
             setTitle('')
             setContent('')

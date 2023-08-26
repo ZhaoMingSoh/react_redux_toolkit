@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useAddNewPostMutation } from "./postsSlice";
 
 const AddPostForm = () => {
-    const [addNewPost, { isLoading }] = useAddNewPostMutation()
+    const [addNewPost, { isLoading }] = useAddNewPostMutation() // **
 
     const navigate = useNavigate()
 
@@ -21,12 +21,12 @@ const AddPostForm = () => {
     const onAuthorChanged = e => setUserId(e.target.value)
 
 
-    const canSave = [title, content, userId].every(Boolean) && !isLoading;
+    const canSave = [title, content, userId].every(Boolean) && !isLoading; // **
 
     const onSavePostClicked = async () => {
         if (canSave) {
             try {
-                await addNewPost({ title, body: content, userId }).unwrap()
+                await addNewPost({ title, body: content, userId }).unwrap() // **
 
                 setTitle('')
                 setContent('')

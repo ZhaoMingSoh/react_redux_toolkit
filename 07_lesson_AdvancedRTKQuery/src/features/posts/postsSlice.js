@@ -5,12 +5,14 @@ import {
 import { sub } from 'date-fns';
 import { apiSlice } from "../api/apiSlice";
 
+// **
 const postsAdapter = createEntityAdapter({
     sortComparer: (a, b) => b.date.localeCompare(a.date)
 })
 
 const initialState = postsAdapter.getInitialState()
 
+// **
 export const extendedApiSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
         getPosts: builder.query({
@@ -31,8 +33,8 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
                 return postsAdapter.setAll(initialState, loadedPosts)
             },
             providesTags: (result, error, arg) => [
-                { type: 'Post', id: "LIST" },
-                ...result.ids.map(id => ({ type: 'Post', id }))
+                { type: 'Post', id: "LIST" }, // identifying List of type Post
+                ...result.ids.map(id => ({ type: 'Post', id })) // spreading each of the post into individual tag object
             ]
         }),
         getPostsByUserId: builder.query({
@@ -119,15 +121,16 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
                     })
                 )
                 try {
-                    await queryFulfilled
+                    await queryFulfilled  // (Promise) represent the completion of the API request associated with the mutation
                 } catch {
-                    patchResult.undo()
+                    patchResult.undo() // undoes the changes made to the Redux store's cache when there is an error
                 }
             }
         })
     })
 })
 
+// **
 export const {
     useGetPostsQuery,
     useGetPostsByUserIdQuery,
@@ -137,21 +140,21 @@ export const {
     useAddReactionMutation
 } = extendedApiSlice
 
-
-
+// **
 // returns the query result object
 export const selectPostsResult = extendedApiSlice.endpoints.getPosts.select()
 
+// **
 // Creates memoized selector
 const selectPostsData = createSelector(
-    selectPostsResult,
-    postsResult => postsResult.data // normalized state object with ids & entities
+    selectPostsResult, // input
+    postsResult => postsResult.data // output, normalized state object with ids & entities
 )
-
+// **
 //getSelectors creates these selectors and we rename them with aliases using destructuring
 export const {
     selectAll: selectAllPosts,
     selectById: selectPostById,
     selectIds: selectPostIds
     // Pass in a selector that returns the posts slice of state
-} = postsAdapter.getSelectors(state => selectPostsData(state) ?? initialState)
+} = postsAdapter.getSelectors(state => selectPostsData(state) ?? initialState) // there's a chance that the selectPostsData(state) is empty, so we're gonna use the entity object

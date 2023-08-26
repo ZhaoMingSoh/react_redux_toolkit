@@ -9,7 +9,7 @@ const reactionEmoji = {
 }
 
 const ReactionButtons = ({ post }) => {
-    const [addReaction] = useAddReactionMutation()
+    const [addReaction] = useAddReactionMutation() // **
 
     const reactionButtons = Object.entries(reactionEmoji).map(([name, emoji]) => {
         return (

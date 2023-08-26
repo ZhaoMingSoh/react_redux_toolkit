@@ -9,10 +9,11 @@ const PostsList = () => {
         isSuccess,
         isError,
         error
-    } = useGetPostsQuery()
+    } = useGetPostsQuery() // **
 
     const orderedPostIds = useSelector(selectPostIds)
 
+    // **
     let content;
     if (isLoading) {
         content = <p>"Loading..."</p>;

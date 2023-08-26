@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { selectUserById } from '../users/usersSlice'
+import { selectUserById } from './usersSlice'
 import { Link, useParams } from 'react-router-dom'
 import { useGetPostsByUserIdQuery } from '../posts/postsSlice'
 
@@ -13,13 +13,14 @@ const UserPage = () => {
         isSuccess,
         isError,
         error
-    } = useGetPostsByUserIdQuery(userId);
+    } = useGetPostsByUserIdQuery(userId); // **
 
+    // **
     let content;
     if (isLoading) {
         content = <p>Loading...</p>
     } else if (isSuccess) {
-        const { ids, entities } = postsForUser
+        const { ids, entities } = postsForUser // since, we're using the createEntityAdapter for the state object
         content = ids.map(id => (
             <li key={id}>
                 <Link to={`/post/${id}`}>{entities[id].title}</Link>
