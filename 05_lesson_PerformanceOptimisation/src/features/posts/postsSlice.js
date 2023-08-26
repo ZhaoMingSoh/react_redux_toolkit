@@ -3,18 +3,21 @@ import {
     createSlice,
     createAsyncThunk,
     createSelector,
-    createEntityAdapter
+    createEntityAdapter // **
 } from "@reduxjs/toolkit";
 import { sub } from 'date-fns';
 import axios from "axios";
 
 const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts';
 
+// **
 const postsAdapter = createEntityAdapter({
     sortComparer: (a, b) => b.date.localeCompare(a.date)
 })
 
 const initialState = postsAdapter.getInitialState({
+    // **
+    // got rid of the empty posts because the "createEntityAdapter" api will have already return the normalise object with an array of ids and entities containing all of the posts
     status: 'idle', //'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
     count: 0
@@ -57,7 +60,8 @@ const postsSlice = createSlice({
     reducers: {
         reactionAdded(state, action) {
             const { postId, reaction } = action.payload
-            const existingPost = state.entities[postId]
+            // **
+            const existingPost = state.entities[postId] // the posts are in the entities object of the normalise state object
             if (existingPost) {
                 existingPost.reactions[reaction]++
             }
@@ -87,7 +91,8 @@ const postsSlice = createSlice({
                     return post;
                 });
 
-                // Add any fetched posts to the array
+                // **
+                // Add any fetched posts to the array using the "createEntityAdapter" CRUD apis
                 postsAdapter.upsertMany(state, loadedPosts)
             })
             .addCase(fetchPosts.rejected, (state, action) => {
@@ -113,6 +118,7 @@ const postsSlice = createSlice({
                     coffee: 0
                 }
                 console.log(action.payload)
+                // **
                 postsAdapter.addOne(state, action.payload)
             })
             .addCase(updatePost.fulfilled, (state, action) => {
@@ -122,6 +128,7 @@ const postsSlice = createSlice({
                     return;
                 }
                 action.payload.date = new Date().toISOString();
+                // **
                 postsAdapter.upsertOne(state, action.payload)
             })
             .addCase(deletePost.fulfilled, (state, action) => {
@@ -131,12 +138,14 @@ const postsSlice = createSlice({
                     return;
                 }
                 const { id } = action.payload;
+                // **
                 postsAdapter.removeOne(state, id)
             })
     }
 })
 
 //getSelectors creates these selectors and we rename them with aliases using destructuring
+// **
 export const {
     selectAll: selectAllPosts,
     selectById: selectPostById,
@@ -149,8 +158,9 @@ export const getPostsStatus = (state) => state.posts.status;
 export const getPostsError = (state) => state.posts.error;
 export const getCount = (state) => state.posts.count;
 
+// Memoise the posts of a user - stop unecessary rerenderings when the increaseCount is dispatched.
 export const selectPostsByUser = createSelector(
-    [selectAllPosts, (state, userId) => userId],
+    [selectAllPosts, (state, userId) => userId], // dependencies that only rerenders when the posts or userId change, input for the args below
     (posts, userId) => posts.filter(post => post.userId === userId)
 )
 
